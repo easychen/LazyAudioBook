@@ -14,7 +14,7 @@ class RoboFile extends \Robo\Tasks
     public function convert()
     {
         // 准备key
-        @require( 'account.php' );
+        @include 'account.php' ;
         if( !isset( $GLOBALS['baidu_akey'] ) )
         {
             $akey = $this->ask("请输入百度语音合成服务的appkey");
