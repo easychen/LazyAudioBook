@@ -33,12 +33,16 @@ class RoboFile extends \Robo\Tasks
         $ship = [];
         $audio_count = 1;
 
+        
+
         $last_file = 'last.json';
         if( file_exists( $last_file ) )
         {
             $info = json_decode( file_get_contents( $last_file ) , 1  );
             $this->save = $info['save'];
             $content_lines = $info['content_lines'];
+            if( isset( $info['voice_type'] ) )
+                $this->voice_type = $info['voice_type'];
         }
         else
         {
@@ -51,6 +55,7 @@ class RoboFile extends \Robo\Tasks
             }
 
             $this->save = $this->askDefault("请输入生成mp3文件的地址",'out.mp3');
+            $this->voice_type = $this->askDefault("请输入生成语音的风格，3-情感男声；4-情感女生",'3'); ;
 
             $content_lines = file( $path );
 
@@ -138,7 +143,9 @@ class RoboFile extends \Robo\Tasks
                     // 保存当前工作数据和目标文件
                     $last = [];
                     $last['save'] = $this->save;
+                    $last['voice_type'] = $this->voice_type;
                     $last['content_lines'] = $content_lines;
+
 
                     file_put_contents( 'last.json' , json_encode( $last , JSON_UNESCAPED_UNICODE ) );
                     
@@ -228,7 +235,7 @@ class RoboFile extends \Robo\Tasks
 
         get_audio:
         
-        $audio = file_get_contents( 'http://tsn.baidu.com/text2audio?lan=zh&ctp=1&cuid=LOCALMAC1022&tok=' . urlencode( $GLOBALS['token'] ) . '&tex=' . urlencode( urlencode( $text ) ) . '&vol=9&per=3&spd=5&pit=5');
+        $audio = file_get_contents( 'http://tsn.baidu.com/text2audio?lan=zh&ctp=1&cuid=LOCALMAC1022&tok=' . urlencode( $GLOBALS['token'] ) . '&tex=' . urlencode( urlencode( $text ) ) . '&vol=9&per=' . intval( $this->voice_type ) . '&spd=5&pit=5');
 
         $headers = parseHeaders( $http_response_header );
         if( $headers['Content-Type'] == 'audio/mp3' )
