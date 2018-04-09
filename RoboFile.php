@@ -11,7 +11,7 @@ class RoboFile extends \Robo\Tasks
     /**
      * 将文本文件转化为mp3
      */
-    public function convert()
+    public function convert( $from = null , $to = null , $type = null )
     {
         // 准备key
         @include 'account.php' ;
@@ -46,16 +46,35 @@ class RoboFile extends \Robo\Tasks
         }
         else
         {
-            // 获取txt文件路径
-            $path = $this->askDefault("请输入要转换的txt文件（仅支持UTF8格式）","/Users/Easy/Desktop/money.txt");
+            
+            
+            if( $from === null )
+            {
+                // 获取txt文件路径
+                $path = $this->askDefault("请输入要转换的txt文件（仅支持UTF8格式）","/Users/Easy/Desktop/money.txt");
+               
+            }else
+            {
+                $path = $from;
+            }
+
             if( !file_exists( $path ) )
             {
                 $this->say("该文件不存在");
                 return false;
             }
+            
+            
+            if( $to === null )
+                $this->save = $this->askDefault("请输入生成mp3文件的地址",'out.mp3');
+            else
+                $this->save = $to;    
 
-            $this->save = $this->askDefault("请输入生成mp3文件的地址",'out.mp3');
-            $this->voice_type = $this->askDefault("请输入生成语音的风格，3-情感男声；4-情感女生",'3'); ;
+
+            if( $type === null )
+                $this->voice_type = $this->askDefault("请输入生成语音的风格，3-情感男声；4-情感女生",'3');
+            else
+                $this->voice_type = $type;
 
             $content_lines = file( $path );
 
